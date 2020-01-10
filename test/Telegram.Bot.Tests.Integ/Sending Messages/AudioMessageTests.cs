@@ -84,7 +84,7 @@ namespace Telegram.Bot.Tests.Integ.Sending_Messages
             const string caption = "Test Voice in .ogg format";
 
             Message message;
-            using (var stream = System.IO.File.OpenRead(Constants.PathToFile.Audio.TestOgg))
+            using (FileStream stream = System.IO.File.OpenRead(Constants.PathToFile.Audio.TestOgg))
             {
                 message = await BotClient.SendVoiceAsync(
                     /* chatId: */ _fixture.SupergroupChat,
