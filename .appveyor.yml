@@ -4,7 +4,7 @@ branches:
   except:
     - gh-pages
     - docs
-image: Visual Studio 2017
+image: Visual Studio 2019
 before_build:
   - nuget restore Telegram.Bot.sln
 build:

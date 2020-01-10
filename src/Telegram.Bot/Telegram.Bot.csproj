@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <VersionPrefix>15.0.0</VersionPrefix>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <VersionPrefix>16.0.0</VersionPrefix>
     <!--<VersionSuffix></VersionSuffix>-->
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8</LangVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>Telegram Bot API Client</Title>
@@ -15,6 +15,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/TelegramBots/telegram.bot.git</RepositoryUrl>
     <PackageTags>Telegram;Bot;Api;Payment;Inline;Games</PackageTags>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <!-- when building on AppVeyor -->
   <PropertyGroup Condition="'$(AppVeyor)' == 'True'">
