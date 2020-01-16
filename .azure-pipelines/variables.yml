@@ -1,0 +1,9 @@
+variables:
+  buildConfiguration: Release
+  vmImage: ubuntu-18.04
+  sdkVersion: 3.1.100
+  projectPath: src/Telegram.Bot/Telegram.Bot.csproj
+  internalFeedName: Telegram.Bot
+  ciVersionSuffix: ci.$(Build.BuildId)+git.commit.$(Build.SourceVersion)
+  unitTestsProject: test/Telegram.Bot.Tests.Unit/Telegram.Bot.Tests.Unit.csproj
+  integrationTestsProject: test/Telegram.Bot.Tests.Integ/Telegram.Bot.Tests.Integ.csproj
