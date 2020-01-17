@@ -87,12 +87,11 @@ stages:
     jobs:
       - template: jobs/run-unit-tests.yml
         parameters:
-          vmImage: ubuntu-18.04
           sdkVersion: $(sdkVersion)
           buildConfiguration: $(buildConfiguration)
           projects: $(unitTestsProject)
           strategies:
-            - Ubuntu: ubuntu-16.04
+            - Ubuntu: ubuntu-18.04
 
   - stage: IntegrationTests
     dependsOn: PublishArtifacts

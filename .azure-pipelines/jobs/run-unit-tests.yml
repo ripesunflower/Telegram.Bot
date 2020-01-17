@@ -1,5 +1,4 @@
 parameters:
-  vmImage: ''
   sdkVersion: ''
   buildConfiguration: ''
   projects: ''
