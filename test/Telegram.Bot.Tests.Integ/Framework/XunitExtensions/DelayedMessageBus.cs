@@ -23,7 +23,9 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
         public bool QueueMessage(IMessageSinkMessage message)
         {
             lock (_messages)
+            {
                 _messages.Add(message);
+            }
 
             // No way to ask the inner bus if they want to cancel without sending them the message, so
             // we just go ahead and continue always.
@@ -34,13 +36,23 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
         public void Dispose()
         {
             foreach (var message in _messages)
+            {
                 _innerBus.QueueMessage(message);
+            }
         }
 
         /// <summary>
         /// Retrieve TestFailed message from IMessageSinkMessage list.
         /// </summary>
-        public TestFailed FailedMessages =>
-            _messages.Find(m => m.GetType() == typeof(TestFailed)) as TestFailed;
+        public TestFailed FailedMessages
+        {
+            get
+            {
+                lock (_messages)
+                {
+                    return _messages.Find(m => m.GetType() == typeof(TestFailed)) as TestFailed;
+                }
+            }
+        }
     }
 }

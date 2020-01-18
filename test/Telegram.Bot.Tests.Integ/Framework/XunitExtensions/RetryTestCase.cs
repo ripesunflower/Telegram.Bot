@@ -78,9 +78,14 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
                         TestsFixture.Instance.SendTestCaseNotificationAsync(testName)
                     );
 
-                var summary = await base.RunAsync
-                (diagnosticMessageSink, delayedMessageBus, constructorArguments, aggregator,
-                    cancellationTokenSource);
+                var summary = await base.RunAsync(
+                    diagnosticMessageSink, 
+                    delayedMessageBus, 
+                    constructorArguments, 
+                    aggregator,
+                    cancellationTokenSource
+                );
+                
                 if (aggregator.HasExceptions ||
                     summary.Failed == 0 ||
                     ++runCount > _maxRetries ||
