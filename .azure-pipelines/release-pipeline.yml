@@ -1,0 +1,98 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+  paths:
+    exclude:
+      - docs/*
+      - "**/*.md"
+
+pr:
+  - master
+
+variables:
+  - template: variables.yml
+
+stages:
+  - stage: Build
+    displayName: 🚧 Build
+    # don't build and pack on PRs
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: Build
+        displayName: Build with .NET Core SDK
+        pool:
+          vmImage: $(vmImage)
+        steps:
+
+          - task: UseDotNet@2
+            displayName: Install .NET Core SDK
+            inputs:
+              version: $(sdkVersion)
+              packageType: sdk
+
+          - script: dotnet help
+            displayName: Initialize .NET Core environment
+
+          - task: DotNetCoreCLI@2
+            displayName: Build project with release version
+            inputs:
+              command: build
+              projects: $(projectPath)
+              arguments: >
+                --configuration $(buildConfiguration)
+
+          - bash: >
+              dotnet pack
+              --no-build
+              --output "$(Build.ArtifactStagingDirectory)/packages/release"
+              --configuration $(buildConfiguration)
+              $(projectPath)
+            displayName: Create release nuget package
+
+          - publish: $(Build.ArtifactStagingDirectory)/packages
+            artifact: packages
+
+  - stage: Release
+    displayName: 🚀 Release
+    dependsOn: UnitTest
+    # don't push release package on pull requests
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: Release
+        displayName: Publish package to NuGet
+        pool:
+          vmImage: $(vmImage)
+        steps:
+
+          - checkout: none
+
+          - download: current
+            artifact: packages
+            patterns: "*/**/*.*upkg"
+
+          - task: UseDotNet@2
+            displayName: Install .NET Core SDK
+            inputs:
+              version: $(sdkVersion)
+              packageType: sdk
+
+          - script: dotnet help
+            displayName: Initialize .NET Core environment
+
+          - bash: >
+              dotnet nuget push
+              $(Pipeline.Workspace)/packages/release/*.nupkg
+              --api-key $(NugetApiKey)
+              --skip-duplicate
+              --source https://nuget.org
+            displayName: Publish package to NuGet
+
+          - bash: >
+              dotnet nuget push
+              $(Pipeline.Workspace)/packages/release/*.snupkg
+              --api-key $(NugetApiKey)
+              --skip-duplicate
+              --source https://nuget.org
+            displayName: Publish symbols to NuGet
