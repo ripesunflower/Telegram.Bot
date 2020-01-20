@@ -100,7 +100,7 @@ stages:
     dependsOn: PublishArtifacts
     displayName: 🧪 Integreation tests
     # don't forget to require a comment from a team member to build PRs from forks
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest))
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - template: jobs/run-integration-tests.yml
         parameters:
