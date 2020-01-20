@@ -1,10 +1,7 @@
 using System;
 using System.ComponentModel;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Polly;
-using Telegram.Bot.Exceptions;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -53,8 +50,7 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
             IMessageBus messageBus,
             object[] constructorArguments,
             ExceptionAggregator aggregator,
-            CancellationTokenSource cancellationTokenSource
-        )
+            CancellationTokenSource cancellationTokenSource)
         {
             int runCount = 0;
             while (true)
@@ -84,13 +80,14 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
                         // Log any exceptions here so we could at least know if notification
                         // sending failed
                         var waitTimeout = 30;
-                        var message = new DiagnosticMessage(
-                            "Couldn't send test name notification for test '{0}', " +
-                            "will try one more in {1} seconds.",
-                            DisplayName,
-                            waitTimeout
+                        diagnosticMessageSink.OnMessage(
+                            new DiagnosticMessage(
+                                "Couldn't send test name notification for test '{0}', " +
+                                "will try one more in {1} seconds.",
+                                DisplayName,
+                                waitTimeout
+                            )
                         );
-                        diagnosticMessageSink.OnMessage(message);
                         await Task.Delay(TimeSpan.FromSeconds(waitTimeout));
                     }
                 }
@@ -133,12 +130,14 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
                     return summary;
                 }
 
-                diagnosticMessageSink.OnMessage(new DiagnosticMessage(
-                    "Execution of '{0}' failed (attempt #{1}), retrying in {2} seconds...",
-                    DisplayName,
-                    runCount,
-                    _delaySeconds
-                ));
+                diagnosticMessageSink.OnMessage(
+                    new DiagnosticMessage(
+                        "Execution of '{0}' failed (attempt #{1}), retrying in {2} seconds...",
+                        DisplayName,
+                        runCount,
+                        _delaySeconds
+                    )
+                );
 
                 await Task.Delay(_delaySeconds * 1_000);
             }
