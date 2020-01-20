@@ -17,7 +17,6 @@ variables:
 stages:
   - stage: Build
     displayName: 🚧 Build
-    # don't build and pack artifacts for PR events
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - job: Build
@@ -59,7 +58,6 @@ stages:
   - stage: PublishArtifacts
     dependsOn: Build
     displayName: 📤 Publish artifacts
-    # don't publish artifacts for PR events
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - template: jobs/publish-artifacts.yml
@@ -73,8 +71,8 @@ stages:
   - stage: UnitTest
     dependsOn: PublishArtifacts
     displayName: 🧪 Unit test
-    # don't forget to require a comment from a team member to build PRs from forks
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+    # run the stage regardless of previous stage status
+    condition: and(always(), eq(variables['Build.Reason'], 'PullRequest'))
     jobs:
 
       - template: jobs/run-unit-tests.yml
@@ -90,7 +88,8 @@ stages:
   - stage: IntegrationTests
     dependsOn: PublishArtifacts
     displayName: 🧪 Integration tests
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+    # run the stage regardless of previous stage status
+    condition: and(always(), eq(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - template: jobs/run-integration-tests.yml
         parameters:

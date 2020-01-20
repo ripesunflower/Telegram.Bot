@@ -86,7 +86,8 @@ stages:
     dependsOn: PublishArtifacts
     displayName: 🧪 Unit test
     # don't forget to require a comment from a team member to build PRs from forks
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+    # run the stage regardless of previous stage status
+    condition: and(always(), eq(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - template: jobs/run-unit-tests.yml
         parameters:
@@ -100,7 +101,8 @@ stages:
     dependsOn: PublishArtifacts
     displayName: 🧪 Integreation tests
     # don't forget to require a comment from a team member to build PRs from forks
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'PullRequest'))
+    # run the stage regardless of previous stage status
+    condition: and(always(), eq(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - template: jobs/run-integration-tests.yml
         parameters:
